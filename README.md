@@ -1,8 +1,10 @@
-## Welcome to GitHub Pages
+# Coffee Pourover Visualization
 
-You can use the [editor on GitHub](https://github.com/da-niel/PourVisualization/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
-
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+## Introduction
+[Pourover coffee](https://www.seriouseats.com/2014/06/make-better-pourover-coffee-how-pourover-works-temperature-timing.html) is a great
+way to make a cup or two of coffee at a time. The aspiration of every pourover coffee enthusiast is to be able to repeat their recipe
+everytime. An often overlooked point of variability is the actual 'pour' itself. The pour is typically from a [narrow spouted kettle](https://www.google.com/search?q=gooseneck+kettle)
+and in circles over a bed of coffee.
 
 ### Markdown
 

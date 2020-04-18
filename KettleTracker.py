@@ -12,6 +12,7 @@ import cv2
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 #Initialize Variables
 center_cone = [0.0,0.0]
@@ -104,23 +105,34 @@ def calculate_angle(coordinates):
     return angle
 
 
+def radial_plot(theta,radii, time):
+    df = pd.concat([theta,radii,time],axis=1)
+    sns.set()
+    g = sns.FacetGrid(df, col = "radii", hue = 'time', subplot_kws=dict(projection='polar'),sharex=False,sharey=False,despine=False)
+    plt.figure(figsize=(8,8))
+    g.map(plt.plot,"theta","radii","time")
+
 def save_radial_scatterplot(theta, radii, path):
     # force square figure and square axes looks better for polar, IMO
-    plt.figure(figsize=(8,8))
+    plt.figure(figsize=(10,8))
     
     ax = plt.subplot(111, 
                      projection='polar')
     
     colors = range(len(theta))
     
-    ax.scatter(theta,
-               radii,
-               c=colors,
-               cmap = 'Greens')
+    sc = ax.scatter(theta,
+                    radii,
+                    c=colors,
+                    cmap = 'coolwarm',
+                    vmin = 0,
+                    vmax = len(theta))
+     
     
+    plt.colorbar(sc,label = 'Location of water over time')
     ax.set_xticklabels([])
     ax.set_rmax(400)
-    ax.set_rgrids([])
+    ax.set_rgrids([250])
     ax.set_thetagrids([90,180,270,0])
     ax.set_title('Distribution of water on a V60')
     plt.savefig(path + '.png')
@@ -223,7 +235,7 @@ output['time'] = range(1,len(output)+1)
 print('Saving file...')
 output.to_csv(vid_name + '_coordinates.csv', index = False)
 print('Making plot...')
-save_radial_scatterplot(output.theta, output.radii, 'water_v60')
+#save_radial_scatterplot(output.theta, output.radii, 'water_v60')
 print('Now exiting...')
 cv2.destroyAllWindows()
     

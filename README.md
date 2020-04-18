@@ -8,15 +8,13 @@ My visualization tool is tackling a typically overlooked point of variability (a
 
 I used image tracking algorithms in openCV that to visualize the water pattern over the coffee.
 
-## The Video (sample)
-![Short snippet](https://media.giphy.com/media/Riyf0ealXqOoNG3i5j/giphy.gif)
+## Video (sample)
+![](https://media.giphy.com/media/Riyf0ealXqOoNG3i5j/giphy.gif)
 
-## The Algorithm
-There are various out-of-the-box tracking algorithms available in openCV. For my first time, I manually checked which algorithm performed the best. By a mile, it was the DCF-CSR (Discriminative Correlation Filter with Channel and Spatial Reliability) tracker that exceled. 
-I adapted the code from [learnopencv](https://www.learnopencv.com/object-tracking-using-opencv-cpp-python/) to start actually using the tracking software. 
+## Algorithm
+There are various out-of-the-box tracking algorithms available in openCV. By a mile, it was the DCF-CSR (Discriminative Correlation Filter with Channel and Spatial Reliability) tracker that best tracked the spout. I adapted the code from [learnopencv](https://www.learnopencv.com/object-tracking-using-opencv-cpp-python/) to start actually using the tracking software. 
 
-## The Data
-The data needed from the video was pretty simple: the center of the pourover device and the water-coffee contact points. I have the user select the center and spout locations themselves before running the video. While the video is running, I continue to collect the water-coffee contact coordinates.
+## Data
+The data needed from the video was pretty simple: the center of the pourover device and the water-coffee contact points. I have the user select the center and spout locations themselves before running the video. While the video is running, water-coffee contact coordinates are collected for each frame.
 
-## The Analysis
-The visualization of the data was not straightforward. It had to show not only the pattern of the pour, but also how the pattern changes over time.
+## Visualization

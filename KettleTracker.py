@@ -109,7 +109,7 @@ def radial_plot(theta,radii, time):
     df = pd.concat([theta,radii,time],axis=1)
     sns.set()
     g = sns.FacetGrid(df, col = "radii", hue = 'time', subplot_kws=dict(projection='polar'),sharex=False,sharey=False,despine=False)
-    plt.figure(figsize=(8,8))
+    plt.figure(figsize=(16,16))
     g.map(plt.plot,"theta","radii","time")
 
 def save_radial_scatterplot(theta, radii, path):
@@ -135,7 +135,7 @@ def save_radial_scatterplot(theta, radii, path):
     ax.set_rgrids([250])
     ax.set_thetagrids([90,180,270,0])
     ax.set_title('Distribution of water on a V60')
-    plt.savefig(path + '.png')
+    plt.savefig(path + '.png', dpi = 400)
     
     
 

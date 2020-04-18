@@ -8,8 +8,8 @@ My visualization tool is tackling a typically overlooked point of variability (a
 
 I used image tracking algorithms in openCV that to visualize the water pattern over the coffee.
 
-## The Video
-
+## The Video (sample)
+![Short snippet](https://media.giphy.com/media/Riyf0ealXqOoNG3i5j/giphy.gif)
 
 ## The Algorithm
 There are various out-of-the-box tracking algorithms available in openCV. For my first time, I manually checked which algorithm performed the best. By a mile, it was the DCF-CSR (Discriminative Correlation Filter with Channel and Spatial Reliability) tracker that exceled. 

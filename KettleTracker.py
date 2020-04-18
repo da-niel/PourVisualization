@@ -4,29 +4,34 @@ Spyder Editor
 
 Kettle Tracker created by Daniel Chow using code adapted from https://www.learnopencv.com/object-tracking-using-opencv-cpp-python/
 
-Input: OpenCV compatible video file (e.g. .avi)
+Input: Video file compatible with OpenCV (e.g. .avi)
 Output: CSV of coordinates: Center of Cone X, Center of Cone Y, Water-Coffee X, Water-Coffee Y
 """
 #Packages
 import cv2
 import pandas as pd
+import numpy as np
+import matplotlib.cm as cm
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 #Initialize Variables
-center_cone = [0,0]
+center_cone = [0.0,0.0]
 vid_name = 'pour1'
 vid_format = '.avi'
 vid_path = vid_name + vid_format
 
 pour_coordinates = []
 
-# Function to save user selected point
-def get_coordinates(event, x, y, flags, param) :
+def get_coordinates(event, x, y, flags, param):
+    # Saves coordinates of mouse click to center_cone
     if event == cv2.EVENT_LBUTTONDOWN :
         center_cone[0],center_cone[1] = x,y
         
         
-# Saves point to center_cone variable
 def get_center(frame):
+    # Saves clicked point to center_cone variable
+    # User presses ESC to exit
     cv2.namedWindow('get center')
     cv2.setMouseCallback('get center', get_coordinates)
     while True:
@@ -35,7 +40,10 @@ def get_center(frame):
         if k == 27: break
         elif k == ord('a'): print(center_cone[0], center_cone[1])
         
-def initialize_tracker(tracker_type):
+        
+def create_tracker(tracker_type):
+    # Initializes the tracker based on the tracker_type
+    # Returns the initialized tracker
     if tracker_type =='BOOSTING':
         tracker = cv2.TrackerBoosting_create()
     elif tracker_type =='MIL':
@@ -56,15 +64,96 @@ def initialize_tracker(tracker_type):
     return tracker
 
 
+def calculate_angle(coordinates):
+    # Calculates angle of a point (x,y) with respect to origin and x-axis
+    # Values range from 0 - 359 degrees
+    
+    x1 = coordinates[0]
+    y1 = coordinates[1]
+    x2 = coordinates[2]
+    y2 = coordinates[3]
+    
+    # Create vector of x, y
+    v_1 = [x1, y1]
+    v_2 = [x2, y2]
+    
+    # Create unit vector of x, y
+    uv_1 = v_1 / np.linalg.norm(v_1)
+    uv_2 = v_2 / np.linalg.norm(v_2)
+    
+    # Calculate angle in radians
+    angle = np.arccos(np.clip(np.dot(uv_1, uv_2),-1.0, 1.0))
+    
+    # Convert to degrees
+    angle = angle*180/np.pi
+    
+    if x2 < x1 and y2 > y1:
+        #Quadrant 2
+        angle += 90
+        return angle
+    elif x2 < x1 and y2 < y1:
+        #Quadrant 3
+        angle += 180
+        return angle
+    elif x2 > x1 and y2 < y1:
+        # Quadrant 4
+        angle += 270
+        return angle
+    else:
+        # Quadrant 1
+        return angle
+    
+    return angle
+
+
+def save_radial_scatterplot(theta, radii, path):
+    # force square figure and square axes looks better for polar, IMO
+    plt.figure(figsize=(8,8))
+    
+    ax = plt.subplot(111, 
+                     projection='polar')
+    
+    colors = range(len(theta))
+    
+    ax.scatter(theta,
+               radii,
+               c=colors,
+               cmap = 'Greens')
+    
+    ax.set_xticklabels([])
+    ax.set_rmax(400)
+    ax.set_rticks([])
+    ax.set_title('Distribution of water on a V60')
+    plt.savefig(path + '.png')
+    
+    
+
+def periodic_time_plot(time, radii):
+    plt.figure(figsize=(16,8))
+    fig, ax = plt.subplot()
+    
+    ax.plot(time, 
+            radii, 
+            marker = '.', 
+            c='Blue')
+
+    ax.set_ylabel('Distance (pixels)')
+    ax.set_xlabel('Time (frames)')
+    ax.set_title('Evolution of a Manual Pour')
+    
+    plt.show()
+    
+  
 # Main Program
 if __name__ == '__main__':
     
     # Set Up Tracker - Tracker Types: 'BOOSTING','MIL','KCF','TLD','MEDIANFLOW','GOTURN','MOSSE','CSRT'
     tracker_type = 'CSRT'
-    tracker = initialize_tracker(tracker_type)
+    tracker = create_tracker(tracker_type)
 
     # Read Video Path
     video = cv2.VideoCapture(vid_path)
+    
     # Read first frame
     ok, frame = video.read()    
     
@@ -98,8 +187,8 @@ if __name__ == '__main__':
             x = bbox[0] - 200
             y = m*x + 200
             
-            # Save coordinates to pour_coordinates
-            pour_coordinates.append((center_cone[0],center_cone[1],x,y))
+            # Save coordinates to pour_coordinates - adjusted
+            pour_coordinates.append((center_cone[0], center_cone[1], x, y))
             
             # Display water-coffee contact point
             cv2.rectangle(frame,(int(x-5),int(y-5)),(int(x+5),int(y+5)),(255,0,0),-1)
@@ -118,9 +207,24 @@ if __name__ == '__main__':
         k = cv2.waitKey(1) & 0xff
         if k == 27 : break
 
-# Save data to csv
-output = pd.DataFrame(pour_coordinates, columns = ['Cone X','Cone Y','Water X','Water Y'])
-output.to_csv(vid_name + '_coordinates.csv', index=False)
 
+# Convert to DF
+output = pd.DataFrame(pour_coordinates, columns = ['cone_x','cone_y','water_x', 'water_y'])
+
+# Calculate angle
+output['theta'] = output.apply(calculate_angle, axis = 1)
+
+# Calculate distance from center
+output['radii'] = np.sqrt((output.water_x - output.cone_x)**2 + (output.water_y - output.cone_y)**2)
+
+# Time variable
+output['time'] = range(1,len(output)+1)
+
+# Save and close
+print('Saving file...')
+output.to_csv(vid_name + '_coordinates.csv', index = False)
+print('Making plot...')
+save_radial_scatterplot(output.theta, output.radii, 'water_v60')
+print('Now exiting...')
 cv2.destroyAllWindows()
     

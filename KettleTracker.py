@@ -105,13 +105,6 @@ def calculate_angle(coordinates):
     return angle
 
 
-def radial_plot(theta,radii, time):
-    df = pd.concat([theta,radii,time],axis=1)
-    sns.set()
-    g = sns.FacetGrid(df, col = "radii", hue = 'time', subplot_kws=dict(projection='polar'),sharex=False,sharey=False,despine=False)
-    plt.figure(figsize=(16,16))
-    g.map(plt.plot,"theta","radii","time")
-
 def save_radial_scatterplot(theta, radii, path):
     # force square figure and square axes looks better for polar, IMO
     plt.figure(figsize=(10,8))
@@ -136,23 +129,6 @@ def save_radial_scatterplot(theta, radii, path):
     ax.set_thetagrids([90,180,270,0])
     ax.set_title('Distribution of water on a V60')
     plt.savefig(path + '.png', dpi = 400)
-    
-    
-
-def periodic_time_plot(time, radii):
-    plt.figure(figsize=(16,8))
-    fig, ax = plt.subplot()
-    
-    ax.plot(time, 
-            radii, 
-            marker = '.', 
-            c='Blue')
-
-    ax.set_ylabel('Distance (pixels)')
-    ax.set_xlabel('Time (frames)')
-    ax.set_title('Evolution of a Manual Pour')
-    
-    plt.show()
     
   
 # Main Program
@@ -235,7 +211,7 @@ output['time'] = range(1,len(output)+1)
 print('Saving file...')
 output.to_csv(vid_name + '_coordinates.csv', index = False)
 print('Making plot...')
-#save_radial_scatterplot(output.theta, output.radii, 'water_v60')
+save_radial_scatterplot(output.theta, output.radii, 'water_v60')
 print('Now exiting...')
 cv2.destroyAllWindows()
     

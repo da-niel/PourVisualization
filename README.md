@@ -15,6 +15,12 @@ There are various out-of-the-box tracking algorithms available in openCV. The DC
 ## Data
 The data needed from the video was straightforward: the center of the pourover device and the water-coffee contact points. I have the user select the center and spout locations themselves before running the video. While the video is running, water-coffee contact coordinates are collected for each frame.
 
+## Analysis
+Additional calculations were performed on the coordinates to translate them into a polar plot friendly format. Unit vectors of each point were taken in order to find the angle between the two points (with respect to the x-axis).
+
 ## Visualization
-Current visualization is in the form of a polar plot, mimicking the video's aerial view.
+Below is the current state of hte visualization. It mimics the video's aerial view.
 ![](/water_v60.png)
+
+## Future Work
+As I continue to process more videos, I can create a "golden batch" of the perfect pour, in which all subsequent pours would be based off of.

@@ -19,7 +19,7 @@ The data needed from the video was straightforward: the center of the pourover d
 Additional calculations were performed on the coordinates to translate them into a polar plot friendly format. Namely, the distance and angle between the two points (with respect to the x-axis) were calculated and labeled respectively as 'theta' and 'radii' below.
 
 time | cone_x |cone_y	| water_x	| water_y	| theta	| radii
---- | --- | --- | --- | --- | --- | ---
+:---: | :---: | :---: | :---: | :---: | :---: | :---:
 1 | 719 |	635	| 848.16	| 496.17	| 281.12 | 189.61
 2 | 719 | 635	| 837.88	| 489.78	| 281.14	| 187.67
 3 | 719	| 635	| 822.25	| 491.43	| 280.58	| 176.84

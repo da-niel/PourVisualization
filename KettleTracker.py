@@ -11,9 +11,7 @@ Output: CSV of coordinates: Center of Cone X, Center of Cone Y, Water-Coffee X, 
 import cv2
 import pandas as pd
 import numpy as np
-import matplotlib.cm as cm
 import matplotlib.pyplot as plt
-import seaborn as sns
 
 #Initialize Variables
 center_cone = [0.0,0.0]
@@ -122,7 +120,8 @@ def save_radial_scatterplot(theta, radii, path):
     
     ax.set_xticklabels([])
     ax.set_rmax(400)
-    ax.set_rticks([])
+    ax.set_rgrids([])
+    ax.set_thetagrids([90,180,270,0])
     ax.set_title('Distribution of water on a V60')
     plt.savefig(path + '.png')
     

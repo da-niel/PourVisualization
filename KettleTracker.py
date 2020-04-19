@@ -2,7 +2,7 @@
 """
 Spyder Editor
 
-Kettle Tracker created by Daniel Chow using code adapted from https://www.learnopencv.com/object-tracking-using-opencv-cpp-python/
+Created by Daniel Chow
 
 Input: Video file compatible with OpenCV (e.g. .avi)
 Output: CSV of coordinates: Center of Cone X, Center of Cone Y, Water-Coffee X, Water-Coffee Y
@@ -12,15 +12,14 @@ import cv2
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import seaborn as sns
 
 #Initialize Variables
 center_cone = [0.0,0.0]
-vid_name = 'pour1'
+vid_name = 'pour1_2'
 vid_format = '.avi'
 vid_path = vid_name + vid_format
-
 pour_coordinates = []
+
 
 def get_coordinates(event, x, y, flags, param):
     # Saves coordinates of mouse click to center_cone
@@ -28,16 +27,25 @@ def get_coordinates(event, x, y, flags, param):
         center_cone[0],center_cone[1] = x,y
         
         
-def get_center(frame):
+def get_center(frame, video):
     # Saves clicked point to center_cone variable
     # User presses ESC to exit
     cv2.namedWindow('get center')
     cv2.setMouseCallback('get center', get_coordinates)
     while True:
+        cv2.putText(frame, 
+                    "1. Get center: Click to make selection. Press ESC when finished. Press 'a' to advance to next frame", 
+                    (100,80), 
+                    cv2.FONT_HERSHEY_SIMPLEX, 
+                    0.75, 
+                    (50,170,50),
+                    2)
         cv2.imshow('get center', frame)
         k = cv2.waitKey(20) & 0xff
-        if k == 27: break
-        elif k == ord('a'): print(center_cone[0], center_cone[1])
+        if k == 27: 
+            return frame
+        elif k == ord('a'): 
+            ok, frame = video.read() #move to next frame
         
         
 def create_tracker(tracker_type):
@@ -105,36 +113,36 @@ def calculate_angle(coordinates):
     return angle
 
 
-def save_radial_scatterplot(theta, radii, path):
-    # force square figure and square axes looks better for polar, IMO
+def save_radial_scatterplot(time, theta, radii, path):
+    
     plt.figure(figsize=(10,8))
     
     ax = plt.subplot(111, 
                      projection='polar')
     
-    colors = range(len(theta))
+    colors = time
     
     sc = ax.scatter(theta,
                     radii,
                     c=colors,
                     cmap = 'coolwarm',
-                    vmin = 0,
-                    vmax = len(theta))
+                    vmin = min(time),
+                    vmax = max(time))
      
     
-    plt.colorbar(sc,label = 'Location of water over time')
+    plt.colorbar(sc,label = 'Location of water over time (s)')
+    ax.set_rmax(500)
     ax.set_xticklabels([])
-    ax.set_rmax(400)
     ax.set_rgrids([250])
     ax.set_thetagrids([90,180,270,0])
     ax.set_title('Distribution of water on a V60')
-    plt.savefig(path + '.png', dpi = 400)
+    plt.savefig(path + '.png', dpi = 300)
     
   
 # Main Program
 if __name__ == '__main__':
     
-    # Set Up Tracker - Tracker Types: 'BOOSTING','MIL','KCF','TLD','MEDIANFLOW','GOTURN','MOSSE','CSRT'
+    # Set Up Tracker
     tracker_type = 'CSRT'
     tracker = create_tracker(tracker_type)
 
@@ -144,15 +152,23 @@ if __name__ == '__main__':
     # Read first frame
     ok, frame = video.read()    
     
-    # Center of V60 UserSelection
+    # Get Center of V60
     if ok:
-        get_center(frame)
+        frame = get_center(frame, video)
     
-    
-    # User selects custom box to track kettle
-    # Enter space to accept selection
+    # Get ROI
+    cv2.putText(frame, 
+                "2. Select ROI: Click and drag to make selection. Press space when finished.", 
+                (100,150), 
+                cv2.FONT_HERSHEY_SIMPLEX, 
+                0.75, 
+                (50,170,50),
+                2)
     bbox = cv2.selectROI(frame,False)
     ok = tracker.init(frame, bbox)
+    
+    #Track time elapsed
+    time = 0.0
     
     while True:
         # Ends if no more frames
@@ -160,9 +176,17 @@ if __name__ == '__main__':
         if not ok:
             break
         
+        #Start timer
+        timer = cv2.getTickCount()
+        
         # Update bounding box
         ok, bbox = tracker.update(frame)
-
+        
+        #Calculate FPS
+        fps = cv2.getTickFrequency() / (cv2.getTickCount() - timer)
+        
+        time += 1 / fps
+        
         if ok:
             # Display ROI
             p1 = (int(bbox[0]), int(bbox[1]))
@@ -175,7 +199,7 @@ if __name__ == '__main__':
             y = m*x + 200
             
             # Save coordinates to pour_coordinates - adjusted
-            pour_coordinates.append((center_cone[0], center_cone[1], x, y))
+            pour_coordinates.append((time, center_cone[0], center_cone[1], x, y))
             
             # Display water-coffee contact point
             cv2.rectangle(frame,(int(x-5),int(y-5)),(int(x+5),int(y+5)),(255,0,0),-1)
@@ -196,7 +220,7 @@ if __name__ == '__main__':
 
 
 # Convert to DF
-output = pd.DataFrame(pour_coordinates, columns = ['cone_x','cone_y','water_x', 'water_y'])
+output = pd.DataFrame(pour_coordinates, columns = ['time', 'cone_x', 'cone_y', 'water_x', 'water_y'])
 
 # Calculate angle
 output['theta'] = output.apply(calculate_angle, axis = 1)
@@ -204,14 +228,11 @@ output['theta'] = output.apply(calculate_angle, axis = 1)
 # Calculate distance from center
 output['radii'] = np.sqrt((output.water_x - output.cone_x)**2 + (output.water_y - output.cone_y)**2)
 
-# Time variable
-output['time'] = range(1,len(output)+1)
-
 # Save and close
 print('Saving file...')
 output.to_csv(vid_name + '_coordinates.csv', index = False)
 print('Making plot...')
-save_radial_scatterplot(output.theta, output.radii, 'water_v60')
+save_radial_scatterplot(output.time, output.theta, output.radii, vid_name + '_water_v60')
 print('Now exiting...')
 cv2.destroyAllWindows()
     

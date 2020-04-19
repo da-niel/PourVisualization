@@ -3,7 +3,7 @@
 ## Introduction
 [Pourover coffee](https://www.seriouseats.com/2014/06/make-better-pourover-coffee-how-pourover-works-temperature-timing.html) is a manual way to make a cup or two of coffee at a time. I became interested in coffee in college because it was an easy way to keep myself awake for all-nighters. A few years later, my home setup is more chemistry lab than kitchen. Like many experiments, consistency is king when you're looking for correlations, and coffee is no different. 
 
-My visualization tool attempts to bring visibility to a generally overlooked point of variability: the pour. Pourover coffee uses a [narrow spouted kettle](https://www.google.com/search?tbm=isch&q=gooseneck+kettle) that provides a steady stream of water to be poured in circles over the coffee. Given that all extraction of the coffee comes from the contact of water to coffee, the pour pattern is an underlooked source of variability. With this tool, I hope to shed some light into this topic.
+My visualization tool attempts to bring visibility to a generally overlooked point of variability: the pour. Pourover coffee uses a [narrow spouted kettle](https://www.google.com/search?tbm=isch&q=gooseneck+kettle) that provides a steady stream of water to be poured in circles over the coffee. Given that all extraction of the coffee comes from the contact of water to coffee, the pour pattern is an underlooked source of variability. With this project, I hope to shed some light into this topic.
 
 ## Video (sample)
 ![](https://media.giphy.com/media/Riyf0ealXqOoNG3i5j/giphy.gif)

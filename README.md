@@ -30,4 +30,5 @@ Below is the visualization that mimics the video's aerial view.
 ![](/pour1_2_water_v60.png)
 
 ## Future Work
-As I continue to process more videos, I can create a "golden batch" of the perfect pour, in which all subsequent pours would be based off of.
+* Create golden batch
+* Scale with different FOV

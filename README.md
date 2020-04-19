@@ -25,8 +25,8 @@ time | cone_x |cone_y	| water_x	| water_y	| theta	| radii
 
 ## Visualization
 Below is the visualization that mimics the video's aerial view.
-![](/Videos/pour1_1_water_v60.png)
-![](/Videos/pour1_2_water_v60.png)
+![](/Images/pour1_1_water_v60.png)
+![](/Images/pour1_2_water_v60.png)
 
 ## Future Work
 * Create golden batch

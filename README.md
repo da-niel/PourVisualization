@@ -25,7 +25,7 @@ time | cone_x |cone_y	| water_x	| water_y	| theta	| radii
 4 | 719	| 635	| 818.58	| 495.86	| 280.24	| 171.10
 
 ## Visualization
-Below is the current state of hte visualization. It mimics the video's aerial view.
+Below is the visualization that mimics the video's aerial view.
 ![](/water_v60.png)
 ![](/pour1_2_water_v60.png)
 
